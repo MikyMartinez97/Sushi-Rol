@@ -1,7 +1,7 @@
 services:
   caddy:
     image: caddy:latest
-    container_name: mi_servidor_web
+    container_name: sushi_rol
     ports:
       - "80:80"
     volumes:
