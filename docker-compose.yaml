@@ -1,0 +1,12 @@
+services:
+  caddy:
+    image: caddy:latest
+    container_name: mi_servidor_web
+    ports:
+      - "80:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./site:/usr/share/caddy
+      - caddy_data:/data
+volumes:
+  caddy_data:
