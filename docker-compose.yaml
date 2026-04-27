@@ -3,10 +3,10 @@ services:
     image: caddy:latest
     container_name: sushi_rol
     ports:
-      - "80:80"
+      - "8800:80"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - ./site:/usr/share/caddy
+      - ./Caddyfile:/etc/caddy/Caddyfile:Z
+      - ./site:/usr/share/caddy:Z
       - caddy_data:/data
 volumes:
   caddy_data:
