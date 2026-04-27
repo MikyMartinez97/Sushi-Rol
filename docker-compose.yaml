@@ -4,6 +4,8 @@ services:
     container_name: sushi_rol
     ports:
       - "8800:80"
+      - "443:443"
+      - "443:443/udp"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:Z
       - ./site:/usr/share/caddy:Z
