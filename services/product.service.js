@@ -19,7 +19,7 @@ export async function getProducById(id) {
 }
 
 export async function createProduct(data) {
-    const slug = slugify(data.name);
+    const slug = uniqueSlug(data.name);
 
     return db.product.create({
         data: {
@@ -44,4 +44,22 @@ function slugify(str) {
     .trim()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
+}
+
+function uniqueSlug(name) {
+    const base = slugify(name);
+
+    // Check if the slug is available
+    const existing = await db.prodcut.findUnique({ where: { slug: base } });
+    if (!existing) return base;
+
+    // Keep trying until we find a slug that isn't taken
+    let slug;
+    do {
+        slug = `${base}-${Math.random().toString(36).slice(2, 6)}`;
+        const collision = await db.product.findUnique({ where: { slug } });
+        if (!collision) break;
+    } while (true);
+
+    return slug;
 }
