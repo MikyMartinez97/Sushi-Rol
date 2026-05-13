@@ -23,7 +23,7 @@ export async function getProductById(req, res, next) {
 
 export async function createProduct(req, res, next) {
     try {
-        const data = productSchema.parse(req.body)
+        const data = productSchema.parse(req.body);
         const product = await productService.createProduct(data);
         res.status(201).json(product);
     } catch (err) {
