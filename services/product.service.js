@@ -50,7 +50,7 @@ function uniqueSlug(name) {
     const base = slugify(name);
 
     // Check if the slug is available
-    const existing = await db.prodcut.findUnique({ where: { slug: base } });
+    const existing = await db.product.findUnique({ where: { slug: base } });
     if (!existing) return base;
 
     // Keep trying until we find a slug that isn't taken
