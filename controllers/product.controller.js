@@ -38,14 +38,20 @@ export function updateProduct(req, res, next) {
     try {
         const data = updateProductSchema.parse(req.body);
         const product = await productService.updateProduct(req.params.id, data);
-        if (!product) return res.status(404).json({ error: "Prodcut not found" });
-        res.status(201).json(product);
+        if (!product) return res.status(404).json({ error: "product not found" });
+        res.json(product);
     } catch (err) {
         next(err);
     }
 }
 
-export function deleteProduct(req, res) {
-    res.send(`Product ${req.params.id} deleted`);
+export function deleteProduct(req, res, next) {
+    try {
+        const product = await productService.deleteProduct(req.params.id);
+        if (!product) return res.status(404).json({ error: "Product not found" });
+        res.status(204).send();
+    } catch (err) {
+        next(err);
+    }
 }
 

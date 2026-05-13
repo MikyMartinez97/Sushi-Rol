@@ -54,6 +54,16 @@ export async function updateProduct(id, data) {
     });
 }
 
+export async function deleteProduct(id) {
+    const product = await db.product.findUnique({ where: {id} });
+    if (!product) return null;
+
+    return db.product.update({
+        where: { id },
+        data: { isActive: false },
+    });
+}
+
 function slugify(str) {
     return str
     .toLowerCase()
