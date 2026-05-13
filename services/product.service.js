@@ -8,7 +8,7 @@ export async function getProducts() {
     });
 }
 
-export async function getProducById(id) {
+export async function getProductById(id) {
     return db.product.findUnique({
         where: { id },
         include: {
