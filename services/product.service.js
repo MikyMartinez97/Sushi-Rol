@@ -29,7 +29,7 @@ export async function createProduct(data) {
             price:           data.price,
             comparedAtPrice: data.comparedAtPrice,
             stockQuantity:   data.stockQuantity,
-            categoryId:  data.categoryId,
+            categoryId:      data.categoryId,
         },
         include: {
             category: { select: { name: true, slug: true } },

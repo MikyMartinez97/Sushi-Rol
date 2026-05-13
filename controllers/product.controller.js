@@ -1,4 +1,5 @@
 import productService from "../services/product.service.js"
+import { productSchema } from "../validations/product.validation.js";
 
 export async function getProducts(req, res, next) {
     try {
@@ -22,7 +23,8 @@ export async function getProductById(req, res, next) {
 
 export async function createProduct(req, res, next) {
     try {
-        const product = await productService.createProduct(req.body);
+        const data = productSchema.parse(req.body)
+        const product = await productService.createProduct(data);
         res.status(201).json(product);
     } catch (err) {
         next(err);
