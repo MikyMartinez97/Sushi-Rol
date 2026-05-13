@@ -1,4 +1,4 @@
-import productService from "../services/product.service.js"
+import * as productService from "../services/product.service.js"
 import {
     productSchema,
     updateProductSchema
@@ -34,7 +34,7 @@ export async function createProduct(req, res, next) {
     }
 }
 
-export function updateProduct(req, res, next) {
+export async function updateProduct(req, res, next) {
     try {
         const data = updateProductSchema.parse(req.body);
         const product = await productService.updateProduct(req.params.id, data);
@@ -45,7 +45,7 @@ export function updateProduct(req, res, next) {
     }
 }
 
-export function deleteProduct(req, res, next) {
+export async function deleteProduct(req, res, next) {
     try {
         const product = await productService.deleteProduct(req.params.id);
         if (!product) return res.status(404).json({ error: "Product not found" });
