@@ -38,6 +38,22 @@ export async function createProduct(data) {
     })
 }
 
+export async function updateProduct(id, data) {
+    // Regenerate slug if name is being changed
+    if (data.name) {
+        data.slug = await uniqueSlug(data.name);
+    }
+
+    return db.product.update({
+        where: { id },
+        data,
+        include: {
+            category: { select: { name: true, slug: true } },
+            images: true,
+        },
+    });
+}
+
 function slugify(str) {
     return str
     .toLowerCase()
@@ -46,7 +62,7 @@ function slugify(str) {
     .replace(/^-|-$/g, '');
 }
 
-function uniqueSlug(name) {
+async function uniqueSlug(name) {
     const base = slugify(name);
 
     // Check if the slug is available

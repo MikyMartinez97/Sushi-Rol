@@ -1,5 +1,8 @@
 import productService from "../services/product.service.js"
-import { productSchema } from "../validations/product.validation.js";
+import {
+    productSchema,
+    updateProductSchema
+} from "../validations/product.validation.js";
 
 export async function getProducts(req, res, next) {
     try {
@@ -31,8 +34,15 @@ export async function createProduct(req, res, next) {
     }
 }
 
-export function updateProduct(req, res) {
-    res.send(`Product ${req.params.id} modified`);
+export function updateProduct(req, res, next) {
+    try {
+        const data = updateProductSchema.parse(req.body);
+        const product = await productService.updateProduct(req.params.id, data);
+        if (!product) return res.status(404).json({ error: "Prodcut not found" });
+        res.status(201).json(product);
+    } catch (err) {
+        next(err);
+    }
 }
 
 export function deleteProduct(req, res) {
