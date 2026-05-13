@@ -8,3 +8,6 @@ export const productSchema = z.object({
     stockQuantity:  z.number().int().min(0),
     categoryId:     z.string().uuid().optional(),
 });
+
+// For updates - every field is optional
+export const updateProductSchema = productSchema.partial();
