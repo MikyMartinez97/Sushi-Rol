@@ -20,8 +20,13 @@ export async function getProductById(req, res, next) {
     }
 }
 
-export function createProduct(req, res) {
-    res.send("Created products here");
+export async function createProduct(req, res, next) {
+    try {
+        const product = await productService.createProduct(req.body);
+        res.status(201).json(product);
+    } catch (err) {
+        next(err);
+    }
 }
 
 export function modifyProduct(req, res) {

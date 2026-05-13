@@ -17,3 +17,23 @@ export async function getProducById(id) {
         }
     })
 }
+
+export async function createProduct(data) {
+    const slug = slugify(data.name);
+
+    return db.product.create({
+        data: {
+            name:            data.name,
+            slug,
+            description:     data.description,
+            price:           data.price,
+            comparedAtPrice: data.comparedAtPrice,
+            stockQuantity:   data.stockQuantity,
+            categoryId:  data.categoryId,
+        },
+        include: {
+            category: { select: { name: true, slug: true } },
+            images:   true,
+        }
+    })
+}
