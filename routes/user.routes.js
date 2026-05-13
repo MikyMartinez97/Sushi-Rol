@@ -3,7 +3,7 @@ import {
     getUsers, 
     getUserById,
     createUser,
-    modifyUser,
+    updateUser,
     deleteUser 
 } from "../controllers/user.controller.js";
 import { requireAuth, requireAdmin } from "../middleware/auth.js";
@@ -17,7 +17,7 @@ router.get('/:id', requireAuth, requireAdmin, getUserById);
 // Create user
 router.post('/', requireAuth, requireAdmin, createUser);
 // Modify user
-router.put('/:id', requireAuth, requireAdmin, modifyUser);
+router.put('/:id', requireAuth, requireAdmin, updateUser);
 // Delete user
 router.delete('/:id', requireAuth, requireAdmin, deleteUser);
 

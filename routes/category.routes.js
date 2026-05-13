@@ -4,7 +4,7 @@ import {
     getCategories,
     getCategory,
     createCategory,
-    modifyCategory,
+    updateCategory,
     deleteCategory,
 } from '../controllers/category.controller.js'
 
@@ -14,7 +14,7 @@ router.get('/', getCategories);
 router.get('/:id', getCategory);
 
 router.post('/', requireAuth, requireAdmin, createCategory);
-router.put('/:id', requireAuth, requireAdmin, modifyCategory);
+router.put('/:id', requireAuth, requireAdmin, updateCategory);
 router.delete('/:id', requireAuth, requireAdmin, deleteCategory);
 
 export default router;

@@ -4,7 +4,7 @@ import {
   getProducts,
   getProductById,
   createProduct,
-  modifyProduct,
+  updateProduct,
   deleteProduct,
 } from '../controllers/product.controller.js';
 
@@ -17,7 +17,7 @@ router.get('/:id', getProductById);
 // Create a new product (admin only)
 router.post('/', requireAuth, requireAdmin, createProduct);
 // Modify product (admin only)
-router.put("/:id", requireAuth, requireAdmin, modifyProduct);
+router.put("/:id", requireAuth, requireAdmin, updateProduct);
 // Delete product (admin only)
 router.delete("/:id", requireAuth, requireAdmin, deleteProduct);
 

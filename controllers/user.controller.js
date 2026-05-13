@@ -10,7 +10,7 @@ export function createUser(req, res) {
     res.send('User Created');
 }
 
-export function modifyUser(req, res) {
+export function updateUser(req, res) {
     res.send(`Modified user ${req.params.id}`);
 }
 

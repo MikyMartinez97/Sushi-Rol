@@ -31,7 +31,7 @@ export async function createProduct(req, res, next) {
     }
 }
 
-export function modifyProduct(req, res) {
+export function updateProduct(req, res) {
     res.send(`Product ${req.params.id} modified`);
 }
 

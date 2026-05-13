@@ -10,7 +10,7 @@ export function createCategory(req, res) {
     res.send('Create category');
 }
 
-export function modifyCategory(req, res) {
+export function updateCategory(req, res) {
     res.send(`Modify category ${req.params.id}`);
 }
 
