@@ -1,5 +1,12 @@
 import express from "express";
 import { requireAdmin, requireAuth } from "../middleware/auth.js";
+import {
+    getCategories,
+    getCategory,
+    createCategory,
+    modifyCategory,
+    deleteCategory,
+} from '../controllers/category.controller.js'
 
 const router = express.Router();
 
