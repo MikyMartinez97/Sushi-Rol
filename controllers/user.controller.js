@@ -1,5 +1,5 @@
 import * as userService from '../services/user.service.js'
-import { userSchema } from '../validations/user.validation.js';
+import { updateUserSchema, userSchema } from '../validations/user.validation.js';
 
 export async function getUsers(req, res, next) {
     try {
@@ -31,7 +31,14 @@ export async function createUser(req, res, next) {
 }
 
 export async function updateUser(req, res, next) {
-    res.send(`Modified user ${req.params.id}`);
+    try {
+        const data = updateUserSchema.parse(req.body);
+        const user = await userService.updateUser(data);
+        if (!user) return res.status(404).json({ error: "User not found" });
+        res.json(user);
+    } catch (err) {
+        next(err);
+    }
 }
 
 export async function deleteUser(req, res, next) {
