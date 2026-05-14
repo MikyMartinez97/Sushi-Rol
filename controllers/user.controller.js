@@ -42,5 +42,11 @@ export async function updateUser(req, res, next) {
 }
 
 export async function deleteUser(req, res, next) {
-    res.send(`Deleted user ${req.params.id}`);
+    try {
+        const user = await deleteUser(req.params.id);
+        if (!user) return res.status(404).json({ error: "User not found" });
+        res.status(204).send();
+    } catch (err) {
+        next(err)
+    }
 }
