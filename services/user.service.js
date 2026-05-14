@@ -8,7 +8,7 @@ export async function getUsers() {
 }
 
 export async function getUserById(id) {
-    return db.user.findUnique({ where: {id} });
+    return db.user.findUnique({ where: { id } });
 }
 
 export async function createUser({ name, email, password, role }) {
@@ -36,4 +36,8 @@ export async function updateUser(id, { name, email, password }) {
         where: { id },
         data,
     });
+}
+
+export async function deleteUser(id) {
+    return db.user.delete({ where: { id }});
 }
