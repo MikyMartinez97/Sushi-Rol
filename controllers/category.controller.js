@@ -1,20 +1,24 @@
-export function getCategory(req, res) {
-    res.send(`Category ${req.params.id}`);
+import * as categoryService from "../services/category.service.js"
+
+export async function getCategoryById(req, res, next) {
+    const category = await categoryService.getCategoryById(req.params.id);
+    if (!category) res.status(404).json({ error: "Category not found" });
+    res.json()
 }
 
-export function getCategories(req, res) {
+export async function getCategories(req, res, next) {
     res.send('Categories list');
 }
 
-export function createCategory(req, res) {
+export async function createCategory(req, res, next) {
     res.send('Create category');
 }
 
-export function updateCategory(req, res) {
+export async function updateCategory(req, res, next) {
     res.send(`Modify category ${req.params.id}`);
 }
 
-export function deleteCategory(req, res) {
+export async function deleteCategory(req, res, next) {
     res.send(`Modify category ${req.params.id}`);
 }
 
