@@ -1,9 +1,14 @@
 import * as categoryService from "../services/category.service.js"
 
 export async function getCategoryById(req, res, next) {
-    const category = await categoryService.getCategoryById(req.params.id);
-    if (!category) res.status(404).json({ error: "Category not found" });
-    res.json()
+    try {
+       const category = await categoryService.getCategoryById(req.params.id);
+        if (!category) return res.status(404).json({ error: "Category not found" });
+        res.json(); 
+    } catch (err) {
+        next(err);
+    }
+    
 }
 
 export async function getCategories(req, res, next) {
