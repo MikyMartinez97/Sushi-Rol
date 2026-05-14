@@ -1,4 +1,5 @@
 import * as userService from '../services/user.service.js'
+import { userSchema } from '../validations/user.validation.js';
 
 export async function getUsers(req, res, next) {
     try {
@@ -20,7 +21,13 @@ export async function getUserById(req, res, next) {
 }
 
 export async function createUser(req, res, next) {
-    res.send('User Created');
+    try {
+        const data = userSchema.parse(req.body);
+        const user = await userService.createUser(data);
+        res.status(201).json(user);
+    } catch (err) {
+        next(err);
+    }
 }
 
 export async function updateUser(req, res, next) {
