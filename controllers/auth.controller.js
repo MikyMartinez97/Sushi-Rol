@@ -28,7 +28,15 @@ export async function login(req, res, next) {
 }
 
 export async function logout(req, res, next) {
-    res.send("Logged out");
+    try {
+        res.clearCookie('token', {
+            httpOnly: true,
+            sameSite: 'strict',
+        });
+        res.status(200).json({ message: 'Logged out successfully' });
+    } catch (err) {
+        next(err);
+    }
 }
 
 export async function getProfile(req, res, next) {
