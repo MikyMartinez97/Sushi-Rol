@@ -17,3 +17,5 @@ router.post('/login', login);
 router.post('/logout', logout);
 // Return current user's profile
 router.get('/me', requireAuth, getProfile);
+
+export default router;
