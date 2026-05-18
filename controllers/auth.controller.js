@@ -4,7 +4,7 @@ export async function register(req, res, next) {
     try {
         const data = userSchema.parse(req.body);
 
-        const { user, token } = await authService.register(data);
+        const { user, token } = await authService.registerUser(data);
 
         res.cookie('token', token, {
             httpOnly: true,

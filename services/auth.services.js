@@ -5,6 +5,8 @@ import db from '../config/db.js';
 
 const DUMMY_HASH = '$2b$12$invalidhashfortimingpurposesonly........';
 
+const SALT_ROUNDS = 14;
+
 export async function login(email, password) {
     // 1. Look up the user
     const user = await db.user.findUnique({ where: { email } });
@@ -49,4 +51,36 @@ export async function getProfile(id) {
             lastLoginAt: true,
         },
     });
+}
+
+export async function registerUser({ name, email, password }) {
+    // 1. Check if email is already taken
+    const existing = await db.user.findUnique({ where: { email } });
+    if (existing) {
+        const err = new Error('An account with that email already exists');
+        err.status = 409;
+        throw err;
+    }
+
+    // 2. Hash the password
+    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+
+    // 3. Create the user
+    const user = await db.user.create({
+        data: {
+            name,
+            email,
+            passwordHash,
+            role: 'customer',
+        },
+    });
+
+    // 4. Sign a JWT
+    const token = jwt.sign(
+        { userId: user.id, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+    );
+
+    return { user, token };
 }
