@@ -36,3 +36,17 @@ export async function login(email, password) {
 
     return { user, token };
 }
+
+export async function getProfile(id) {
+    return db.user.findUnique({
+        where: { id },
+        select: {
+            id:          true,
+            name:        true,
+            email:       true,
+            role:        true,
+            createdAt:   true,
+            lastLoginAt: true,
+        },
+    });
+}
