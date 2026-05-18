@@ -1,5 +1,5 @@
 import express from "express";
-import { requireAuth, requireAdmin } from "../middleware/auth.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -11,9 +11,5 @@ router.get('/:id', requireAuth, );
 router.post('/', requireAuth, );
 // Cancel and order (limited window)
 router.put('/:id/cancel', requireAuth, )
-// List all orders (admin only)
-router.get('/', requireAuth, requireAdmin, );
-// Update order status (admin only)
-router.put('/:id', requireAuth, requireAdmin, );
 
 export default router;
