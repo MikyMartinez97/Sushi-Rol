@@ -40,5 +40,11 @@ export async function logout(req, res, next) {
 }
 
 export async function getProfile(req, res, next) {
-    res.send("User profile");
+    try {
+        const user = await authService.getProfile(req.user.userId);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        res.status(200).json(user);
+    } catch (err) {
+        next(err);
+    }
 }
