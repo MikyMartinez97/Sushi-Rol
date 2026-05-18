@@ -1,4 +1,4 @@
-export async function registerUSer(req, res, next) {
+export async function registerUser(req, res, next) {
     res.send("User registered!");
 }
 
