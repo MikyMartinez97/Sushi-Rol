@@ -1,5 +1,23 @@
-export async function registerUser(req, res, next) {
-    res.send("User registered!");
+import * as authService from '../services/auth.services.js'
+
+export async function register(req, res, next) {
+    try {
+        const data = userSchema.parse(req.body);
+
+        const { user, token } = await authService.register(data);
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            sameSite: 'strict',
+            maxAge:   60 * 60 * 1000, // 1 hour
+        });
+
+        res.status(201).json({
+            user: { id: user.id, name: user.name, email: user.email, role: user.role }
+        });
+    } catch (err) {
+        next(err);
+    }
 }
 
 export async function login(req, res, next) {
