@@ -21,3 +21,11 @@ export async function getOrderById(req, res, next) {
   }
 }
 
+export async function getOrders(req, res, next) {
+  try {
+    const orders = await orderService.getOrders(req.user.userId);
+    res.status(200).json(orders);
+  } catch (err) {
+    next(err);
+  }
+}
