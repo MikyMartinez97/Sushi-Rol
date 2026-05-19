@@ -6,9 +6,27 @@ import {
 
 export async function getProducts(req, res, next) {
     try {
-        const products = await productService.getProducts();
-        if (!products) return res.status(404).json({ error: 'No products found' });
-        res.json(products);
+        const {
+            page = 1,
+            pageSize = 12,
+            sort,
+            category,
+            search,
+            minPrice,
+            maxPrice,
+        } = req.query;
+
+        const result = await productService.listProducts({
+            page: parseInt(page),
+            pageSize: parseInt(pageSize),
+            sort,
+            category,
+            search,
+            minPrice: minPrice ? parseFloat(minPrice) : undefined,
+            maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
+        });
+
+        res.status(200).json(result);
     } catch (err) {
         next(err);
     }
