@@ -77,23 +77,39 @@ export async function getProductById(id) {
 }
 
 export async function createProduct(data) {
-    const slug = uniqueSlug(data.name);
 
+    // Step 1 — generate a unique slug from the name
+    const slug = await uniqueSlug(data.name);
+
+    // Step 2 — verify categoryId exists if provided
+    if (data.categoryId) {
+        const category = await db.category.findUnique({
+            where: { id: data.categoryId }
+        });
+        if (!category) {
+            const err = new Error('Category not found');
+            err.status = 404;
+            throw err;
+        }
+    }
+
+    // Step 3 — create the product
     return db.product.create({
         data: {
             name: data.name,
             slug,
-            description: data.description,
+            description: data.description ?? null,
             price: data.price,
-            comparedAtPrice: data.comparedAtPrice,
+            compareAtPrice: data.compareAtPrice ?? null,
             stockQuantity: data.stockQuantity,
-            categoryId: data.categoryId,
+            categoryId: data.categoryId ?? null,
+            isActive: true,
         },
         include: {
             category: { select: { name: true, slug: true } },
             images: true,
-        }
-    })
+        },
+    });
 }
 
 export async function updateProduct(id, data) {
