@@ -16,3 +16,22 @@ export async function getOrders(userId) {
         }
     });
 }
+
+export async function getOrderById(id) {
+    return db.order.findUnique({
+        where: { id },
+        include: {
+            orderItems: {
+                include: {
+                    product: {
+                        select: { slug: true, images: { where: { position: 0 }, take: 1 } }
+                    }
+                },
+                orderBy: { createdAt: 'asc' }
+            },
+            statusHistory: {
+                orderBy: { createdAt: 'asc' }
+            }
+        }
+    });
+}
