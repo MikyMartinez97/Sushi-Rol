@@ -42,6 +42,12 @@ export async function updateCategory(req, res, next) {
 }
 
 export async function deleteCategory(req, res, next) {
-    res.send(`Modify category ${req.params.id}`);
+    try {
+        const result = await categoryService.deleteCategory(req.params.id);
+        if (!result) return res.status(404).json({ error: 'Category not found' });
+        res.status(204).send();
+    } catch (err) {
+        next(err); // 409 from service lands here
+    }
 }
 
