@@ -1,4 +1,4 @@
-import * as authService from '../services/auth.services.js'
+import * as authService from '../services/auth.service.js'
 import { registerUserSchema } from '../validations/user.validation.js'
 
 export async function registerUser(req, res, next) {
