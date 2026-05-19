@@ -107,3 +107,36 @@ export async function updateCategory(id, data) {
         }
     });
 }
+
+export async function deleteCategory(id) {
+
+    // Step 1 — check the category exists
+    const category = await db.category.findUnique({ where: { id } });
+    if (!category) return null;
+
+    // Step 2 — check for active products
+    const activeProductCount = await db.product.count({
+        where: { categoryId: id, isActive: true }
+    });
+
+    if (activeProductCount > 0) {
+        const err = new Error(
+            `Cannot delete "${category.name}" — it has ${activeProductCount} active product(s). ` +
+            `Reassign or deactivate them first.`
+        );
+        err.status = 409;
+        throw err;
+    }
+
+    // Step 3 — handle inactive products that still reference this category
+    //           set their categoryId to null so they become uncategorised
+    await db.product.updateMany({
+        where: { categoryId: id, isActive: false },
+        data: { categoryId: null },
+    });
+
+    // Step 4 — delete the category
+    await db.category.delete({ where: { id } });
+
+    return true;
+}
