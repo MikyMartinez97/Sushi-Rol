@@ -68,12 +68,12 @@ export async function listProducts({
 
 export async function getProductById(id) {
     return db.product.findUnique({
-        where: { id },
+        where: { id, isActive: true },
         include: {
             images: { orderBy: { position: 'asc' } },
             category: { select: { name: true, slug: true } },
-        }
-    })
+        },
+    });
 }
 
 export async function createProduct(data) {
