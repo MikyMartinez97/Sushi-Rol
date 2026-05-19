@@ -57,7 +57,7 @@ export async function updateProduct(req, res, next) {
         const data = updateProductSchema.parse(req.body);
         const product = await productService.updateProduct(req.params.id, data);
         if (!product) return res.status(404).json({ error: "product not found" });
-        res.json(product);
+        res.status(200).json(product);
     } catch (err) {
         next(err);
     }
