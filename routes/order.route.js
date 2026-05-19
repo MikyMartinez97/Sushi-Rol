@@ -9,7 +9,7 @@ router.get('/', requireAuth, );
 router.get('/:id', requireAuth, );
 // Create a new order
 router.post('/', requireAuth, );
-// Cancel and order (limited window)
+// Cancel an order (limited window)
 router.put('/:id/cancel', requireAuth, )
 
 export default router;
