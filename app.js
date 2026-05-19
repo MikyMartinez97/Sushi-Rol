@@ -1,4 +1,5 @@
 import express from 'express';
+import helmet from 'helmet';
 import userRouter from './routes/user.routes.js'
 import productRouter from './routes/product.routes.js'
 import authRouter from './routes/auth.routes.js'
@@ -6,6 +7,7 @@ import authRouter from './routes/auth.routes.js'
 const app = express();
 
 // Global middleware
+app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
