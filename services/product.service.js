@@ -113,17 +113,55 @@ export async function createProduct(data) {
 }
 
 export async function updateProduct(id, data) {
-    // Regenerate slug if name is being changed
-    if (data.name) {
-        data.slug = await uniqueSlug(data.name);
+
+    // Step 1 — check the product exists
+    const existing = await db.product.findUnique({ where: { id } });
+    if (!existing) return null;
+
+    // Step 2 — build update payload with only provided fields
+    const updateData = {};
+
+    if (data.name !== undefined) {
+        updateData.name = data.name;
+        // Regenerate slug if name changed
+        if (data.name !== existing.name) {
+            updateData.slug = await uniqueSlug(data.name, id);
+        }
+    }
+    if (data.description !== undefined) updateData.description = data.description;
+    if (data.price !== undefined) updateData.price = data.price;
+    if (data.compareAtPrice !== undefined) updateData.compareAtPrice = data.compareAtPrice;
+    if (data.stockQuantity !== undefined) updateData.stockQuantity = data.stockQuantity;
+    if (data.isActive !== undefined) updateData.isActive = data.isActive;
+
+    // Step 3 — verify new categoryId exists if being changed
+    if (data.categoryId !== undefined) {
+        if (data.categoryId !== null) {
+            const category = await db.category.findUnique({
+                where: { id: data.categoryId }
+            });
+            if (!category) {
+                const err = new Error('Category not found');
+                err.status = 404;
+                throw err;
+            }
+        }
+        updateData.categoryId = data.categoryId;
     }
 
+    if (Object.keys(updateData).length === 0) {
+        const err = new Error('No fields provided to update');
+        err.status = 400;
+        throw err;
+    }
+
+    // Step 4 — perform the update
     return db.product.update({
         where: { id },
-        data,
+        data: updateData,
         include: {
             category: { select: { name: true, slug: true } },
-            images: true,
+            images: { orderBy: { position: 'asc' } },
         },
     });
 }
