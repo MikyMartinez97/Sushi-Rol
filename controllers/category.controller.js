@@ -31,7 +31,14 @@ export async function createCategory(req, res, next) {
 }
 
 export async function updateCategory(req, res, next) {
-    res.send(`Modify category ${req.params.id}`);
+    try {
+        const data = categorySchema.partial().parse(req.body);
+        const category = await categoryService.updateCategory(req.params.id, data);
+        if (!category) return res.status(404).json({ error: 'Category not found' });
+        res.status(200).json(category);
+    } catch (err) {
+        next(err);
+    }
 }
 
 export async function deleteCategory(req, res, next) {
