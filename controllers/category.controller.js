@@ -1,4 +1,5 @@
 import * as categoryService from "../services/category.service.js"
+import { categorySchema } from "../validations/category.validation.js"
 
 export async function getCategoryById(req, res, next) {
     try {
@@ -8,7 +9,6 @@ export async function getCategoryById(req, res, next) {
     } catch (err) {
         next(err);
     }
-
 }
 
 export async function getCategories(req, res, next) {
@@ -21,7 +21,13 @@ export async function getCategories(req, res, next) {
 }
 
 export async function createCategory(req, res, next) {
-    res.send('Create category');
+    try {
+        const data = categorySchema.parse(req.body);
+        const category = await categoryService.createCategory(data);
+        res.status(201).json(category);
+    } catch (err) {
+        next(err);
+    }
 }
 
 export async function updateCategory(req, res, next) {
