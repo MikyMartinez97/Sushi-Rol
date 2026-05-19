@@ -1,3 +1,4 @@
+import { PrismaClientUnknownRequestError } from '@prisma/client/runtime/library';
 import * as orderService from '../services/order.service.js'
 
 export async function getOrderById(req, res, next) {
@@ -38,6 +39,31 @@ export async function cancelOrder(req, res, next) {
             req.user.role,
         );
         res.status(200).json(order);
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function createOrder(req, res, next) {
+    try {
+        const { cartItems, shippingAddress, paymentIntentId } = req.body;
+
+        // Basic validation
+        if (!cartItems || cartItems.length === 0) {
+            return res.status(400).json({ error: 'Cart is empty' });
+        }
+        if (!shippingAddress || !paymentIntentId) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+
+        const order = await orderService.createOrder({
+            userId: req.user.userId,
+            cartItems,
+            shippingAddress,
+            paymentIntentId,
+        });
+
+        res.status(201).json(order);
     } catch (err) {
         next(err);
     }
