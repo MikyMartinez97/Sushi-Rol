@@ -56,10 +56,17 @@ export async function updateUser(req, res, next) {
 
 export async function deleteUser(req, res, next) {
     try {
-        const user = await userService.deleteUser(req.params.id);
-        if (!user) return res.status(404).json({ error: "User not found" });
+        // Prevent admin from deleting their own account
+        if (req.params.id === req.user.userId) {
+            return res.status(409).json({
+                error: 'You cannot delete your own account'
+            });
+        }
+
+        const result = await userService.deleteUser(req.params.id);
+        if (!result) return res.status(404).json({ error: 'User not found' });
         res.status(204).send();
     } catch (err) {
-        next(err)
+        next(err);
     }
 }
