@@ -3,10 +3,23 @@ import { updateUserSchema, userSchema } from '../validations/user.validation.js'
 
 export async function getUsers(req, res, next) {
     try {
-        const users = await userService.getUsers();
-        res.json(users);
+        const {
+            page = 1,
+            pageSize = 20,
+            search,
+            role,
+        } = req.query;
+
+        const result = await userService.listUsers({
+            page: parseInt(page),
+            pageSize: parseInt(pageSize),
+            search,
+            role,
+        });
+
+        res.status(200).json(result);
     } catch (err) {
-        next(err)
+        next(err);
     }
 }
 
