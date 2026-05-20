@@ -184,5 +184,60 @@ export async function updateUser(id, { name, email, password, role }) {
 }
 
 export async function deleteUser(id) {
-    return db.user.delete({ where: { id } });
+
+    // Step 1 — check the user exists
+    const user = await db.user.findUnique({
+        where: { id },
+        include: { _count: { select: { orders: true } } }
+    });
+    if (!user) return null;
+
+    // Step 2 — check for active orders
+    const activeOrderCount = await db.order.count({
+        where: {
+            userId: id,
+            status: { in: ['pending', 'confirmed', 'processing', 'shipped'] }
+        }
+    });
+
+    if (activeOrderCount > 0) {
+        const err = new Error(
+            `Cannot delete "${user.name}" — they have ${activeOrderCount} active order(s). ` +
+            `Wait for those orders to complete first.`
+        );
+        err.status = 409;
+        throw err;
+    }
+
+    // Step 3 — anonymise rather than hard delete if they have order history
+    //           preserves financial records while removing personal data
+    if (user._count.orders > 0) {
+        await db.$transaction(async (tx) => {
+
+            // Anonymise the user record
+            await tx.user.update({
+                where: { id },
+                data: {
+                    name: `Deleted User`,
+                    email: `deleted-${id}@deleted.invalid`,
+                    passwordHash: 'deleted',
+                    role: 'customer',
+                    lastLoginAt: null,
+                }
+            });
+
+            // Delete their addresses — no longer needed
+            await tx.address.deleteMany({ where: { userId: id } });
+        });
+
+        return true;
+    }
+
+    // Step 4 — hard delete if they have no order history at all
+    await db.$transaction(async (tx) => {
+        await tx.address.deleteMany({ where: { userId: id } });
+        await tx.user.delete({ where: { id } });
+    });
+
+    return true;
 }
