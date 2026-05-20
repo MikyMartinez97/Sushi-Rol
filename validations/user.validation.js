@@ -9,8 +9,9 @@ export const userSchema = z.object({
 
 export const updateUserSchema = z.object({
     name:     z.string().min(1).max(40).optional(),
-    email:    z.string().email(),
-    password: z.string().min(8),
+    email:    z.string().email().optional(),
+    password: z.string().min(8).optional(),
+    role:     z.enum(['customer', 'admin']).optional(),
 });
 
 export const registerUserSchema = z.object({
