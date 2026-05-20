@@ -1,5 +1,6 @@
 import * as addressService from '../services/address.service.js';
 import * as userService from '../services/user.service.js';
+import { addressSchema } from '../validations/address.validation.js';
 
 // Customer shortcut — uses userId from token
 export async function getMyAddresses(req, res, next) {
