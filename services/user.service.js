@@ -50,7 +50,45 @@ export async function listUsers({ page, pageSize, search, role }) {
 }
 
 export async function getUserById(id) {
-    return db.user.findUnique({ where: { id } });
+    return db.user.findUnique({
+        where: { id },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            createdAt: true,
+            updatedAt: true,
+            lastLoginAt: true,
+            addresses: {
+                orderBy: { isDefault: 'desc' },
+                select: {
+                    id: true,
+                    name: true,
+                    line1: true,
+                    line2: true,
+                    city: true,
+                    state: true,
+                    postalCode: true,
+                    country: true,
+                    isDefault: true,
+                }
+            },
+            orders: {
+                orderBy: { createdAt: 'desc' },
+                take: 5,
+                select: {
+                    id: true,
+                    status: true,
+                    total: true,
+                    createdAt: true,
+                }
+            },
+            _count: {
+                select: { orders: true }
+            }
+        }
+    });
 }
 
 export async function createUser({ name, email, password, role }) {
