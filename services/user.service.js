@@ -1,3 +1,4 @@
+import { PrismaClientUnknownRequestError } from '@prisma/client/runtime/library';
 import db from '../config/db.js';
 import bcrypt from 'bcrypt';
 
@@ -125,22 +126,60 @@ export async function createUser({ name, email, password, role }) {
     return user;
 }
 
-export async function updateUser(id, { name, email, password }) {
-    const data = {}
+export async function updateUser(id, { name, email, password, role }) {
+
+    // Step 1 — check the user exists
+    const existing = await db.user.findUnique({ where: { id } });
+    if (!existing) return null;
+
+    // Step 2 — build update payload with only provided fields
+    const data = {};
 
     if (name) data.name = name;
-    if (email) data.email = email;
-    if (password) data.passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+    if (role) data.role = role;
+
+    // Step 3 — check new email isn't taken by another user
+    if (email && email !== existing.email) {
+        const conflict = await db.user.findFirst({
+            where: {
+                AND: [
+                    { email: { equals: email, mode: 'insensitive' } },
+                    { id: { not: id } },
+                ]
+            }
+        });
+        if (conflict) {
+            const err = new Error('An account with that email already exists');
+            err.status = 409;
+            throw err;
+        }
+        data.email = email;
+    }
+
+    // Step 4 — hash new password if provided
+    if (password) {
+        data.passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+    }
 
     if (Object.keys(data).length === 0) {
-        const err = new Error('No fileds provided to update');
+        const err = new Error('No fields provided to update');
         err.status = 400;
         throw err;
     }
 
+    // Step 5 — perform the update
     return db.user.update({
         where: { id },
         data,
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            createdAt: true,
+            updatedAt: true,
+            lastLoginAt: true,
+        }
     });
 }
 
