@@ -6,12 +6,17 @@ import {
     updateUser,
     deleteUser 
 } from "../controllers/user.controller.js";
+import { getMyAddresses, getAddressesByUserId } from '../controllers/address.controller.js';
 import { requireAuth, requireAdmin } from "../middleware/auth.js";
 
 const router = express.Router()
 
 // Get users (admin only)
 router.get('/', requireAuth, requireAdmin, getUsers);
+// Get user's addresses
+router.get('/me/addresses', requireAuth, getMyAddresses);
+// Get user's addresses by id
+router.get('/:id/addresses', requireAuth, requireAdmin, getAddressesByUserId);
 // Get user by id
 router.get('/:id', requireAuth, requireAdmin, getUserById);
 // Create user
