@@ -167,13 +167,37 @@ export async function updateProduct(id, data) {
 }
 
 export async function deleteProduct(id) {
-    const product = await db.product.findUnique({ where: { id } });
-    if (!product) return null;
 
-    return db.product.update({
-        where: { id },
-        data: { isActive: false },
-    });
+  // Step 1 — check the product exists and is currently active
+  const product = await db.product.findUnique({ where: { id } });
+  if (!product) return null;
+
+  // Step 2 — check for active orders containing this product
+  const activeOrderCount = await db.orderItem.count({
+    where: {
+      productId: id,
+      order: {
+        status: { in: ['pending', 'confirmed', 'processing'] }
+      }
+    }
+  });
+
+  if (activeOrderCount > 0) {
+    const err = new Error(
+      `Cannot delete "${product.name}" — it appears in ${activeOrderCount} active order(s). ` +
+      `Wait for those orders to complete or cancel them first.`
+    );
+    err.status = 409;
+    throw err;
+  }
+
+  // Step 3 — soft delete by setting isActive to false
+  await db.product.update({
+    where: { id },
+    data:  { isActive: false },
+  });
+
+  return true;
 }
 
 function slugify(str) {
