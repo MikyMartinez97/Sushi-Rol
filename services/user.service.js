@@ -92,11 +92,37 @@ export async function getUserById(id) {
 }
 
 export async function createUser({ name, email, password, role }) {
+
+    // Step 1 — check email isn't already taken
+    const existing = await db.user.findUnique({ where: { email } });
+    if (existing) {
+        const err = new Error('An account with that email already exists');
+        err.status = 409;
+        throw err;
+    }
+
+    // Step 2 — hash the password
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
-    return db.user.create({
-        data: { name, email, passwordHash, role: role ?? 'customer' }
+    // Step 3 — create the user
+    const user = await db.user.create({
+        data: {
+            name,
+            email,
+            passwordHash,
+            role,
+        },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            createdAt: true,
+            lastLoginAt: true,
+        }
     });
+
+    return user;
 }
 
 export async function updateUser(id, { name, email, password }) {
