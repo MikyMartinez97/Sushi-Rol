@@ -46,9 +46,9 @@ export async function createUser(req, res, next) {
 export async function updateUser(req, res, next) {
     try {
         const data = updateUserSchema.parse(req.body);
-        const user = await userService.updateUser(data);
-        if (!user) return res.status(404).json({ error: "User not found" });
-        res.json(user);
+        const user = await userService.updateUser(req.params.id, data);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        res.status(200).json(user);
     } catch (err) {
         next(err);
     }
