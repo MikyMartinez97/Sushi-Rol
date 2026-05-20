@@ -29,3 +29,17 @@ export async function getAddressesByUserId(req, res, next) {
         next(err);
     }
 }
+
+// Customer shortcut
+export async function createMyAddress(req, res, next) {
+    try {
+        const data = addressSchema.parse(req.body);
+        const address = await addressService.createAddress(
+            req.user.userId,
+            data,
+        );
+        res.status(201).json(address);
+    } catch (err) {
+        next(err);
+    }
+}
