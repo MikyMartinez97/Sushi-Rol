@@ -3,8 +3,50 @@ import bcrypt from 'bcrypt';
 
 const SALT_ROUNDS = 14;
 
-export async function getUsers() {
-    return db.user.findMany({ orderBy: { name: 'asc' } })
+export async function listUsers({ page, pageSize, search, role }) {
+
+    // Build where clause incrementally
+    const where = {};
+
+    // Filter by role if provided
+    if (role) where.role = role;
+
+    // Search by name or email
+    if (search) {
+        where.OR = [
+            { name: { contains: search, mode: 'insensitive' } },
+            { email: { contains: search, mode: 'insensitive' } },
+        ];
+    }
+
+    const [users, total] = await Promise.all([
+        db.user.findMany({
+            where,
+            orderBy: { createdAt: 'desc' },
+            skip: (page - 1) * pageSize,
+            take: pageSize,
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+                createdAt: true,
+                lastLoginAt: true,
+                _count: {
+                    select: { orders: true }
+                }
+            },
+        }),
+        db.user.count({ where }),
+    ]);
+
+    return {
+        users,
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+    };
 }
 
 export async function getUserById(id) {
@@ -15,7 +57,7 @@ export async function createUser({ name, email, password, role }) {
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
     return db.user.create({
-        data: { name, email, passwordHash, role: role ?? 'customer'}
+        data: { name, email, passwordHash, role: role ?? 'customer' }
     });
 }
 
@@ -29,7 +71,7 @@ export async function updateUser(id, { name, email, password }) {
     if (Object.keys(data).length === 0) {
         const err = new Error('No fileds provided to update');
         err.status = 400;
-        throw err; 
+        throw err;
     }
 
     return db.user.update({
@@ -39,5 +81,5 @@ export async function updateUser(id, { name, email, password }) {
 }
 
 export async function deleteUser(id) {
-    return db.user.delete({ where: { id }});
+    return db.user.delete({ where: { id } });
 }
