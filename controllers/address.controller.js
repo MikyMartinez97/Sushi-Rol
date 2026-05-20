@@ -43,3 +43,21 @@ export async function createMyAddress(req, res, next) {
         next(err);
     }
 }
+
+// Admin route
+export async function createAddressForUser(req, res, next) {
+    try {
+        const data = addressSchema.parse(req.body);
+
+        const user = await userService.getUserById(req.params.id);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        const address = await addressService.createAddress(
+            req.params.id,
+            data,
+        );
+        res.status(201).json(address);
+    } catch (err) {
+        next(err);
+    }
+}
